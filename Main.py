@@ -16,7 +16,7 @@ print("Running")
 pokemonURL = "https://pokeapi.co/api/v2/pokemon/"
 
 window = tk.Tk()
-#Window initilization
+#Window initialization
 window.title("Pokedex++ (Powered by PokeAPI)")
 window.configure(bg='lightgray')
 
