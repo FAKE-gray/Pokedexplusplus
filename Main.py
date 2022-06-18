@@ -32,16 +32,18 @@ pokemonData = nullcontext
 pokemonURL = nullcontext
 pkmBack = nullcontext
 pkmFront = nullcontext
+shinyBack = nullcontext
+shinyFront = nullcontext
 ability = ""
 
 input= tk.Text(window, height = 1, width = 10)
 moveList= tk.Text(window, height = 6, width = 15)
 
-idLbl = tk.Label(window, text="National Dex #: ")
+idLbl = tk.Label(window, text="National Dex No.: ")
 nameLbl = tk.Label(window, text="Name: ")
 type1Lbl = tk.Label(window, text="Type 1: ")
 type2Lbl = tk.Label(window, text="Type 2: ")
-entryLbl = tk.Label(window, text="Enter Pokemon Name or National Dex Number")
+entryLbl = tk.Label(window, text="Enter Name or National Dex #")
 HPLbl = tk.Label(window, text="HP: ") 
 atkLbl = tk.Label(window, text="ATK: ") 
 defLbl = tk.Label(window, text="DEF: ") 
@@ -160,6 +162,7 @@ def getMoves( pkm ):
         moves += str(pokeObj['moves'][counter]['move']['name']) + "\n"
         counter += 1
     #print(moves)
+    #idk why this scrollbar isn't showing up
     moveList.delete("1.0", 'end')
     moveList.insert('end', moves)
     moveList.config(state='disabled')
@@ -170,9 +173,12 @@ def getMoves( pkm ):
 def getSprites( pkm ):
     global pkmBack
     global pkmFront
+    global shinyFront
+    global shinyBack
     global window
     
     pokeObj = json.loads(pkm)
+    #Regular back and front
     response1 = requests.get(pokeObj['sprites']['back_default'])
     
     pkmBack = Image.open(BytesIO(response1.content))
@@ -183,12 +189,26 @@ def getSprites( pkm ):
     pkmFront = Image.open(BytesIO(response2.content))
     pkmFront = ImageTk.PhotoImage(pkmFront)
     
+    #shiny back and front
+    response3 = requests.get(pokeObj['sprites']['back_shiny'])
+    
+    shinyBack = Image.open(BytesIO(response3.content))
+    shinyBack = ImageTk.PhotoImage(shinyBack)
+    
+    response4 = requests.get(pokeObj['sprites']['front_shiny'])
+    
+    shinyFront = Image.open(BytesIO(response4.content))
+    shinyFront = ImageTk.PhotoImage(shinyFront)
+    
+    #add them to the grid
     bckSprt = tk.Label(window, image = pkmBack)
-    bckSprt.grid(row = 0, column = 1, sticky = 'W', pady = 5)
+    bckSprt.grid(row = 3, column = 2, sticky = 'W', pady = 5)
     frntSprt = tk.Label(window, image = pkmFront)
-    frntSprt.grid(row = 0, column = 0, sticky = 'W', pady = 5)
-    
-    
+    frntSprt.grid(row = 3, column = 3, sticky = 'W', pady = 5)
+    bckShiny = tk.Label(window, image = shinyBack)
+    bckShiny.grid(row = 4, column = 2, sticky = 'W', pady = 5)
+    frntShiny = tk.Label(window, image = shinyFront)
+    frntShiny.grid(row = 4, column = 3, sticky = 'W', pady = 5)
     
 #Pack info into a grid
 #please find a better way to do this part for the love of god
@@ -230,7 +250,7 @@ def gridLabels():
 
 window.protocol("WM_DELETE_WINDOW", on_closing)
 
-window.protocol("<Return>", getPokemon)
+##window.protocol("<Return>", getPokemon)
 
 #labels and submit button
 submitBtn = tk.Button(window, text = "Search", command = getPokemon)
