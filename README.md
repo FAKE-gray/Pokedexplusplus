@@ -1,7 +1,9 @@
 # Pokedexplusplus
 python tool for grabbing pokemon data
 DEV: Gray Horst
+
 GITHUB: FAKE-gray
+
 Start: 06/17/2022
 
 Proj: Pokedex ++
@@ -14,10 +16,11 @@ Summary:
   If anyone else wants something added, lmk and Ill try, or take the code and do it yourself, either works
 
 Use Case:
-    Used to grab and save specified information about a given pokemon
-    Relies on pokeAPI
-    I made this for getting pokemon data for fast imports to a game I am working on
-    However I feel others might get a use from it so it will inevitably be released to the public
+   Used to grab and save specified information about a given pokemon
+   Relies on pokeAPI
+   I made this for getting pokemon data for fast imports to a game I am working on
+   However I feel others might get a use from it so it will inevitably be released to the public
+   
 Misc:
-    This is my first python program lets goooo
-    please dont judge the gross code too much please, Im still getting better
+   This is my first python program lets goooo
+   please dont judge the gross code too much please, Im still getting better
