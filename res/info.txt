@@ -1,0 +1,13 @@
+DEV: Gray Horst
+GITHUB: FAKE-gray
+Start: 06/17/2022
+
+Proj: Pokedex ++
+
+Use Case:
+    Used to grab and save specified information about a given pokemon
+    Relies on pokeAPI
+    I made this for getting pokemon data for fast imports to a game I am working on
+    However I feel others might get a use from it so it will inevitably be released to the public
+Misc:
+    This is my first python program lets goooo
