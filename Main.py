@@ -7,7 +7,6 @@ from PIL import Image, ImageTk
 from enum import Enum
 from io import BytesIO
 from contextlib import nullcontext
-from distutils.command.config import config
 
 print("Running")
 
@@ -53,6 +52,7 @@ speedLbl = tk.Label(window, text="SPEED: ")
 abilityLbl = tk.Label(window, text="Abilities: ") 
 bstLbl = tk.Label(window, text="Base Stats ") 
 
+tempMon = nullcontext
 ##########################Function Declarations###############################################
 
 #confirm window close
@@ -67,12 +67,15 @@ def getPokemon():
     global pokemon
     global ability
     global pokemonURL
+    global tempMon
     ability = ""
     inp = input.get(1.0, "end-1c")
     inp = inp.lower()
     pokemonURL = "https://pokeapi.co/api/v2/pokemon/" + inp
     pokemonData = requests.get(pokemonURL)
     pokemon = json.dumps(pokemonData.json(), sort_keys = True, indent = 1)
+    
+    tempMon = pokemon
     
     fillData(pokemon)
     
@@ -209,7 +212,18 @@ def getSprites( pkm ):
     bckShiny.grid(row = 4, column = 2, sticky = 'W', pady = 5)
     frntShiny = tk.Label(window, image = shinyFront)
     frntShiny.grid(row = 4, column = 3, sticky = 'W', pady = 5)
+
+#save data to file
+def saveData():
+    global tempMon
     
+    pokeObj = json.loads(tempMon)
+    file_name = pokeObj['name'] + '.txt'
+    file = open(file_name,'w')
+    file.write(pokeObj['name'])
+    file.close()
+
+
 #Pack info into a grid
 #please find a better way to do this part for the love of god
 def gridLabels():
@@ -246,6 +260,7 @@ def gridLabels():
     speedLbl.grid(row = 6, column = 1, sticky = 'W', pady = 5)
     abilityLbl.grid(row = 5, column = 1, sticky = 'W', pady = 5)
     moveList.grid(row = 9, column = 0, sticky = 'W', pady = 5)
+    saveBtn.grid(row = 9, column = 2, sticky = 'W', pady = 5)
 ###############################################################################################
 
 window.protocol("WM_DELETE_WINDOW", on_closing)
@@ -254,7 +269,7 @@ window.protocol("WM_DELETE_WINDOW", on_closing)
 
 #labels and submit button
 submitBtn = tk.Button(window, text = "Search", command = getPokemon)
-
+saveBtn = tk.Button(window, text = "Save", command = saveData)
 gridLabels()
 
 #shiny pachu icon cause fav
