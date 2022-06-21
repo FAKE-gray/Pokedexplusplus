@@ -1,5 +1,6 @@
 import requests
 import json
+import os
 import tkinter as tk
 from tkinter import *
 from tkinter import END, messagebox
@@ -33,10 +34,12 @@ pkmBack = nullcontext
 pkmFront = nullcontext
 shinyBack = nullcontext
 shinyFront = nullcontext
+moveTxt = nullcontext
+ablTxt = nullcontext
 ability = ""
 
 input= tk.Text(window, height = 1, width = 10)
-moveList= tk.Text(window, height = 6, width = 15)
+moveList= tk.Text(window, wrap = WORD, height = 6, width = 20)
 
 idLbl = tk.Label(window, text="National Dex No.: ")
 nameLbl = tk.Label(window, text="Name: ")
@@ -138,12 +141,15 @@ def getStats( pkm ):
 #get abilities for pokemon
 def getAbilities( pkm ):
     global ability
+    global ablTxt
     
     pokeObj = json.loads(pkm)
     
+    ablTxt = ''
     counter = 0
     for a in pokeObj['abilities']:
-        ability += (pokeObj['abilities'][counter]['ability']['name']) + ", "
+        ablTxt += (pokeObj['abilities'][counter]['ability']['name']) + ", "
+        ability += (pokeObj['abilities'][counter]['ability']['name']) + ",\n "
         counter += 1
     
     abilityLbl.config(text = 'Abilities: ' + ability)
@@ -153,16 +159,19 @@ def getMoves( pkm ):
     global moveList
     global scroll
     global frame
+    global moveTxt
     
     counter = 0
     moves = ""
+    moveTxt = ''
     moveList.config(state='normal')
     moveList.delete("1.0", 'end')
     moveList.insert('end', "")
     pokeObj = json.loads(pkm)
     
     for move in pokeObj['moves']:
-        moves += str(pokeObj['moves'][counter]['move']['name']) + "\n"
+        moveTxt += str(pokeObj['moves'][counter]['move']['name']) + ","
+        moves += str(pokeObj['moves'][counter]['move']['name']) + ",\n"
         counter += 1
     #print(moves)
     #idk why this scrollbar isn't showing up
@@ -212,17 +221,83 @@ def getSprites( pkm ):
     bckShiny.grid(row = 4, column = 2, sticky = 'W', pady = 5)
     frntShiny = tk.Label(window, image = shinyFront)
     frntShiny.grid(row = 4, column = 3, sticky = 'W', pady = 5)
+    
 
 #save data to file
 def saveData():
     global tempMon
+    global type1Lbl
+    global type2Lbl
+    global abilityLbl
+    global moveList
+    global atkLbl
+    global defLbl
+    global spAtkLbl
+    global spDefLbl
+    global speedLbl
+    global HPLbl
+    global moveTxt
+    global ablTxt
+    global pkmBack
+    global pkmFront
+    global shinyFront
+    global shinyBack
     
     pokeObj = json.loads(tempMon)
+    
+    path = 'pokemon/' + pokeObj['name'] + '/'
+    os.mkdir(path)
+    
     file_name = pokeObj['name'] + '.txt'
-    file = open(file_name,'w')
-    file.write(pokeObj['name'])
+    file = open(path + file_name,'w')
+    file.write("Name: "+ pokeObj['name'] + '\n')
+    file.write(type1Lbl.cget("text")+ '\n')
+    file.write(type2Lbl.cget("text") + '\n')
+    file.write(HPLbl.cget("text") + '\n')
+    file.write(atkLbl.cget("text") + '\n')
+    file.write(defLbl.cget("text") + '\n')
+    file.write(spAtkLbl.cget("text") + '\n')
+    file.write(spDefLbl.cget("text") + '\n')
+    file.write(speedLbl.cget("text") + '\n')
+    file.write('Abilities: ' + ablTxt + '\n')
+    file.write('Moves: '+ moveTxt)
     file.close()
-
+    
+    # such an inefficient  way to do this, please find something better
+    response1 = requests.get(pokeObj['sprites']['back_default'])
+    
+    pkmBack = Image.open(BytesIO(response1.content))
+    pkmBack.save(path + pokeObj['name'] + '_back' +'.png', 'PNG' )
+    
+    response2 = requests.get(pokeObj['sprites']['front_default'])
+    
+    pkmFront = Image.open(BytesIO(response2.content))
+    pkmFront.save(path + pokeObj['name'] + '_Front' +'.png', 'PNG' )
+    
+    #shiny back and front
+    response3 = requests.get(pokeObj['sprites']['back_shiny'])
+    
+    shinyBack = Image.open(BytesIO(response3.content))
+    shinyBack.save(path + pokeObj['name'] + '_shiny_back' +'.png', 'PNG' )
+    
+    response4 = requests.get(pokeObj['sprites']['front_shiny'])
+    
+    shinyFront = Image.open(BytesIO(response4.content))
+    shinyFront.save(path + pokeObj['name'] + '_shiny_front' +'.png', 'PNG' )
+    
+    #put the images back cause they disapear for some reason
+    shinyBack = ImageTk.PhotoImage(shinyBack)
+    shinyFront = ImageTk.PhotoImage(shinyFront)
+    pkmFront = ImageTk.PhotoImage(pkmFront)
+    pkmBack = ImageTk.PhotoImage(pkmBack)
+    bckSprt = tk.Label(window, image = pkmBack)
+    bckSprt.grid(row = 3, column = 2, sticky = 'W', pady = 5)
+    frntSprt = tk.Label(window, image = pkmFront)
+    frntSprt.grid(row = 3, column = 3, sticky = 'W', pady = 5)
+    bckShiny = tk.Label(window, image = shinyBack)
+    bckShiny.grid(row = 4, column = 2, sticky = 'W', pady = 5)
+    frntShiny = tk.Label(window, image = shinyFront)
+    frntShiny.grid(row = 4, column = 3, sticky = 'W', pady = 5)
 
 #Pack info into a grid
 #please find a better way to do this part for the love of god
@@ -260,7 +335,7 @@ def gridLabels():
     speedLbl.grid(row = 6, column = 1, sticky = 'W', pady = 5)
     abilityLbl.grid(row = 5, column = 1, sticky = 'W', pady = 5)
     moveList.grid(row = 9, column = 0, sticky = 'W', pady = 5)
-    saveBtn.grid(row = 9, column = 2, sticky = 'W', pady = 5)
+    saveBtn.grid(row = 10, column = 3, sticky = 'W', pady = 5)
 ###############################################################################################
 
 window.protocol("WM_DELETE_WINDOW", on_closing)
