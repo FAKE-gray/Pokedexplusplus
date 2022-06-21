@@ -1,0 +1,11 @@
+Name: ditto
+Type 1: normal
+Type 2: none
+HP: 48
+ATK: 48
+DEF: 48
+SpATK: 48
+SpDEF: 48
+SPEED: 48
+Abilities: limber, imposter, 
+Moves: transform,
