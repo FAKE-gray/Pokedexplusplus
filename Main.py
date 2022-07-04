@@ -25,7 +25,7 @@ scroll = Scrollbar(frame)
 scroll.pack(side = RIGHT, expand=True)
 
 #init fields
-#global variables cause Im to lazy to be bothered
+#global variables cause Im too lazy to be bothered
 
 pokemon = nullcontext
 pokemonData = nullcontext
@@ -43,9 +43,9 @@ moveList= tk.Text(window, wrap = WORD, height = 6, width = 20)
 
 idLbl = tk.Label(window, text="National Dex No.: ")
 nameLbl = tk.Label(window, text="Name: ")
-type1Lbl = tk.Label(window, text="Type 1: ")
-type2Lbl = tk.Label(window, text="Type 2: ")
-entryLbl = tk.Label(window, text="Enter Name or National Dex #")
+type1Lbl = tk.Label(window, text="Type1: ")
+type2Lbl = tk.Label(window, text="Type2: ")
+entryLbl = tk.Label(window, text="Enter Name or National Dex #: \nuse name-alola, -hisui, -galar for regionals ")
 HPLbl = tk.Label(window, text="HP: ") 
 atkLbl = tk.Label(window, text="ATK: ") 
 defLbl = tk.Label(window, text="DEF: ") 
@@ -110,10 +110,10 @@ def getTypes( pkm ):
     pokeObj = json.loads(pkm)
     for type in pokeObj['types']:
         if counter == 0:
-            type1Lbl.config(text ="Type 1: " + pokeObj['types'][counter]['type']['name'])
-            type2Lbl.config(text ="Type 2: none")
+            type1Lbl.config(text ="Type1: " + pokeObj['types'][counter]['type']['name'])
+            type2Lbl.config(text ="Type2: none")
         else:
-            type2Lbl.config(text ="Type 2: " + pokeObj['types'][counter]['type']['name'])
+            type2Lbl.config(text ="Type2: " + pokeObj['types'][counter]['type']['name'])
         counter += 1
     
 
@@ -242,7 +242,7 @@ def saveData():
     global pkmFront
     global shinyFront
     global shinyBack
-    
+
     pokeObj = json.loads(tempMon)
     
     path = 'pokemon/' + pokeObj['name'] + '/'
@@ -262,6 +262,7 @@ def saveData():
     file.write('Abilities: ' + ablTxt + '\n')
     file.write('Moves: '+ moveTxt)
     file.close()
+    
     
     # such an inefficient  way to do this, please find something better
     response1 = requests.get(pokeObj['sprites']['back_default'])
@@ -298,7 +299,10 @@ def saveData():
     bckShiny.grid(row = 4, column = 2, sticky = 'W', pady = 5)
     frntShiny = tk.Label(window, image = shinyFront)
     frntShiny.grid(row = 4, column = 3, sticky = 'W', pady = 5)
-
+    
+    #open popup for confirmation
+    #open_popup()
+    
 #Pack info into a grid
 #please find a better way to do this part for the love of god
 def gridLabels():
@@ -336,11 +340,17 @@ def gridLabels():
     abilityLbl.grid(row = 5, column = 1, sticky = 'W', pady = 5)
     moveList.grid(row = 9, column = 0, sticky = 'W', pady = 5)
     saveBtn.grid(row = 10, column = 3, sticky = 'W', pady = 5)
+
+def open_popup():
+    global window
+    top= Toplevel(window)
+    top.geometry("450x200")
+    top.title("Notification")
+    Label(top, text= "Pokemon Data Saved", font=('Helvetica 18 bold')).place(x = 75, y = 100)
+   
 ###############################################################################################
 
 window.protocol("WM_DELETE_WINDOW", on_closing)
-
-##window.protocol("<Return>", getPokemon)
 
 #labels and submit button
 submitBtn = tk.Button(window, text = "Search", command = getPokemon)
